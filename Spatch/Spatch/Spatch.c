@@ -14,21 +14,10 @@ clients must be made or how a client should react.
 
 //#include "config.h"
 
-#include <libssh/libssh.h>
-#include <libssh/server.h>
-#include <libssh/callbacks.h>
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <poll.h>
-#include <pty.h>
-#include <pthread.h>
-
 #include "Spatch.h"
 #include "SessionLoop.h"
 
-sthreadList* newNodeList(sthreadList* list, ssh_session session)
+static sthreadList* newNodeList(sthreadList* list, ssh_session session)
 {
     sthreadList *new;
     new = (sthreadList*)malloc(sizeof(sthreadList));
@@ -37,7 +26,7 @@ sthreadList* newNodeList(sthreadList* list, ssh_session session)
     return (new);
 }
 
-void cleanList(sthreadList* list)
+static void cleanList(sthreadList* list)
 {
     sthreadList* tmp = NULL;
     do {
@@ -50,7 +39,8 @@ void cleanList(sthreadList* list)
 
 }
 
-int main(int argc, char **argv){
+int spatch()
+{
     ssh_session session = NULL;
     ssh_bind sshbind = NULL;
     sthreadList* list = NULL;
@@ -67,8 +57,7 @@ int main(int argc, char **argv){
     ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_RSAKEY,
                                             KEYS_FOLDER "ssh_host_rsa_key");
 
-    (void) argc;
-    (void) argv;
+
 
     if(ssh_bind_listen(sshbind)<0){
         printf("Error listening to socket: %s\n", ssh_get_error(sshbind));

@@ -1,8 +1,8 @@
-#include <stdio.h>
+#include "Spatch.h"
 
 int main(void)
 {
-    printf("Hello World!\n");
+    spatch();
     return 0;
 }
 
