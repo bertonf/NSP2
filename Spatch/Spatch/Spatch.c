@@ -7,7 +7,7 @@ static sthreadList* newNodeList(sthreadList* list, ssh_session session)
     n = (sthreadList*)malloc(sizeof(sthreadList));
     n->session = session;
     n->next = list;
-    return (new);
+    return (n);
 }
 
 static void cleanList(sthreadList* list)
