@@ -5,6 +5,8 @@
 #define SSHD_PASSWORD "libssh"
 
 #define KEYS_FOLDER "/etc/ssh/"
+#define SERVER_PORT 25000
+
 
 #include <libssh/libssh.h>
 #include <libssh/server.h>
