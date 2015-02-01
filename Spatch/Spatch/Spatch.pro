@@ -8,7 +8,8 @@ SOURCES += main.c \
     SessionLoop.c \
     clientlistner.c \
     authentication.c \
-    knowhost.c
+    knowhost.c \
+    sendclientcmd.c
 
 HEADERS += \
     Spatch.h \

@@ -41,6 +41,8 @@ ssh_session connect_ssh(const char *host, const char *user, int port, int verbos
     auth=authenticate_console(session);
     if(auth==SSH_AUTH_SUCCESS)
     {
+        printf("Connection reussi\n");
+        show_remote_processes(session);
         return session;
     }
     else if(auth==SSH_AUTH_DENIED)
@@ -51,6 +53,7 @@ ssh_session connect_ssh(const char *host, const char *user, int port, int verbos
     {
         fprintf(stderr,"Error while authenticating : %s\n",ssh_get_error(session));
     }
+
     ssh_disconnect(session);
     return NULL;
 }
