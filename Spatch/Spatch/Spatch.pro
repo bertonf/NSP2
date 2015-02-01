@@ -5,11 +5,16 @@ CONFIG -= qt
 
 SOURCES += main.c \
     Spatch.c \
-    SessionLoop.c
+    SessionLoop.c \
+    clientlistner.c \
+    authentication.c \
+    knowhost.c
 
 HEADERS += \
     Spatch.h \
-    SessionLoop.h
+    SessionLoop.h \
+    clientlistner.h \
+    authentication.h
 
 
 LIBS += -lssh -lutil -lpthread
