@@ -34,7 +34,8 @@ static servAccess* addServAccess(servAccess* sAccess, char *var, char *val)
 {
     servAccess* sa = newSvrAccess();
 
-    sa->name = (char*)malloc(strlen(var));
+    sa->name = (char*)malloc(strlen(var) + 1);
+    memset(sa->name, 0, strlen(var) + 1);
     strcpy(sa->name, var);
     if (strncmp("USER", val, 4) == 0)
         sa->acc = USER;
@@ -64,11 +65,13 @@ static void LineParser(usrData* ud, char* line, esection s)
             if (strncmp("NAME", var, 4) == 0)
             {
                 ud->name = (char*)malloc(strlen(val));
+                memset(ud->name, 0, strlen(val));
                 strncpy(ud->name, val, strlen(val) - 1);
             }
             else if(strncmp("PWD", var, 3) == 0)
             {
                 ud->pwd = (char*)malloc(strlen(val));
+                memset(ud->pwd, 0, strlen(val));
                 strncpy(ud->pwd, val, strlen(val) - 1);
             }
             break;
@@ -87,7 +90,7 @@ static void LineParser(usrData* ud, char* line, esection s)
             }
             break;
         default:
-            return;
+            break;
         }
     }
 }
@@ -107,7 +110,7 @@ usrData* GetUsrData(char *usrName)
     fileName = (char*)malloc(strlen(usrName) + strlen(".usr") + 1);
     if (fileName == NULL)
         return (NULL);
-
+    memset(fileName, 0, strlen(usrName) + strlen(".usr") + 1);
     strcpy(fileName, usrName);
     strcat(fileName, ".usr");
 
@@ -132,11 +135,13 @@ usrData* GetUsrData(char *usrName)
             s = SPA;
         else if (read > 2 && s != NOONE)
             LineParser(ud, line, s);
-    }
 
+    }
     if (line)
         free(line);
-
+    if (fileName)
+        free(fileName);
+    fclose(fp);
     return (ud);
 }
 
