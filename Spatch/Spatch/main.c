@@ -1,11 +1,9 @@
 #include "Spatch.h"
-
 #include "usrFile.h"
 
-int main(void)
+
+void mainTestUsrData(void)
 {
-    //spatch();
-    //connect_ssh ("88.188.248.11", "ubuntu01", 5656,  0);
     usrData* usr;
 
     usr = GetUsrData("bertonf");
@@ -14,6 +12,15 @@ int main(void)
     SaveUsrData(usr);
     DebugTraceUsrData(usr);
     FreeUsrData(usr);
+}
+
+
+
+int main(void)
+{
+    spatch();
+    //connect_ssh ("88.188.248.11", "ubuntu01", 5656,  0);
+
 
     return 0;
 }

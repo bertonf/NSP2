@@ -55,19 +55,21 @@ int spatch()
         session=ssh_new();
         if (ssh_bind_accept(sshbind, session) == SSH_ERROR)
         {
-          printf("Error accepting a connection: %s\n", ssh_get_error(sshbind));
+            printf("Error accepting a connection: %s\n", ssh_get_error(sshbind));
             ssh_free(session);
         }
         else
         {
-            if (pthread_create(&(list->thread), NULL, &NewSessionLoop, (void*)session) == 0)
+            list = newNodeList(list, session);
+            if (pthread_create(&(list->thread), NULL, (void*)NewSessionLoop, (void*)session) != 0)
             {
-                list = newNodeList(list, session);
-            }
-            else
-            {
+                sthreadList* tmp;
+
                 ssh_disconnect(session);
                 ssh_free(session);
+                tmp = list;
+                list = list->next;
+                free(tmp);
             }
         }
     }

@@ -10,14 +10,16 @@ SOURCES += main.c \
     authentication.c \
     knowhost.c \
     sendclientcmd.c \
-    usrFile.c
+    usrFile.c \
+    CmdAnalyser.c
 
 HEADERS += \
     Spatch.h \
     SessionLoop.h \
     clientlistner.h \
     authentication.h \
-    usrFile.h
+    usrFile.h \
+    CmdAnalyser.h
 
 
 LIBS += -lssh -lutil -lpthread

@@ -51,6 +51,7 @@ typedef struct s_usrData
 }usrData;
 
 usrData* GetUsrData(char *usrName);
+int SaveUsrData(usrData *uData);
 void DebugTraceUsrData(usrData* usr);
 void FreeUsrData(usrData* usr);
 

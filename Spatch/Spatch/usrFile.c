@@ -97,7 +97,7 @@ static void LineParser(usrData* ud, char* line, esection s)
 
 usrData* GetUsrData(char *usrName)
 {
-    FILE* fp;
+    FILE* fd;
     char* fileName = NULL;
     char* line = NULL;
 
@@ -114,19 +114,15 @@ usrData* GetUsrData(char *usrName)
     strcpy(fileName, usrName);
     strcat(fileName, ".usr");
 
-    fp = fopen(fileName, "r");
-    if (fp == NULL)
+    fd = fopen(fileName, "r");
+    if (fd == NULL)
         return (NULL);
 
     ud = newUsrData();
     if (ud == NULL)
         return (NULL);
     s = NOONE;
-    while ((read = getline(&line, &len, fp)) != -1) {
-        /*printf("Retrieved line of length %zu :\n", read);
-        //    sscanf("%s=%s", var, val);
-        printf("line : %s\n", line);*/
-
+    while ((read = getline(&line, &len, fd)) != -1) {
         if(strncmp(line, SECTIONUSR, 9) == 0)
             s = USR;
         else if (strncmp(line, SECTIONSVR, 12) == 0)
@@ -135,14 +131,71 @@ usrData* GetUsrData(char *usrName)
             s = SPA;
         else if (read > 2 && s != NOONE)
             LineParser(ud, line, s);
-
     }
     if (line)
         free(line);
     if (fileName)
         free(fileName);
-    fclose(fp);
+    fclose(fd);
     return (ud);
+}
+
+int SaveUsrData(usrData *uData)
+{
+    FILE* fd;
+    servAccess* tmp;
+    char* fileName = NULL;
+
+    fileName = (char*)malloc(strlen(uData->name) + strlen(".usr") + 1);
+    if (fileName == NULL)
+        return (-1);
+
+    memset(fileName, 0, strlen(uData->name) + strlen(".usr") + 1);
+    strcpy(fileName, uData->name);
+    strcat(fileName, ".usr");
+
+    fd = fopen(fileName, "w");
+    if (fd == NULL)
+        return (-1);
+
+    fprintf(fd, "[USRINFO]\n");
+    fprintf(fd, "NAME=%s\n", uData->name);
+    fprintf(fd, "PWD=%s\n", uData->pwd);
+
+    fprintf(fd, "\n[SERVACCESS]\n");
+
+    tmp = uData->sAccess;
+    while (tmp != NULL)
+    {
+        switch (tmp->acc)
+        {
+        case USER:
+            fprintf(fd, "%s=USER\n", tmp->name);
+            break;
+        case ADMIN:
+            fprintf(fd, "%s=ADMIN\n", tmp->name);
+            break;
+        default:
+            break;
+        }
+        tmp = tmp->next;
+    }
+
+    fprintf(fd, "\n[SPATCHACCESS]\n");
+
+    switch (uData->spaAccess)
+    {
+    case ADMIN:
+        fprintf(fd, "ACCESS=ADMIN\n");
+        break;
+    default:
+        fprintf(fd, "ACCESS=USER\n");
+        break;
+    }
+    if (fileName)
+        free(fileName);
+    fclose(fd);
+    return (0);
 }
 
 void DebugTraceUsrData(usrData* usr)

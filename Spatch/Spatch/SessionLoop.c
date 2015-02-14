@@ -76,6 +76,7 @@ static int copy_fd_to_chan(socket_t fd, int revents, void *userdata)
     char buf[2048];
     int sz = 0;
 
+    memset(buf, 0, 2048);
     if(!chan) {
         close(fd);
         return -1;
@@ -176,7 +177,7 @@ static int main_loop(ssh_channel chan)
     return 0;
 }
 
-void NewSessionLoop(void* sshsession)
+void* NewSessionLoop(void* sshsession)
 {
     ssh_session session = sshsession;
     ssh_message message;
@@ -186,7 +187,7 @@ void NewSessionLoop(void* sshsession)
 
     if (ssh_handle_key_exchange(session)) {
         printf("ssh_handle_key_exchange: %s\n", ssh_get_error(session));
-        return 1;
+        return (NULL);
     }
 
     /* proceed to authentication */
@@ -194,7 +195,7 @@ void NewSessionLoop(void* sshsession)
     if(!auth){
         printf("Authentication error: %s\n", ssh_get_error(session));
         ssh_disconnect(session);
-        return 1;
+        return (NULL);
     }
 
 
@@ -217,10 +218,10 @@ void NewSessionLoop(void* sshsession)
     } while(!chan);
 
     if(!chan) {
-        printf("Error: cleint did not ask for a channel session (%s)\n",
+        printf("Error: client did not ask for a channel session (%s)\n",
                                                     ssh_get_error(session));
         ssh_finalize();
-        return 1;
+        return (NULL);
     }
 
 
@@ -249,10 +250,11 @@ void NewSessionLoop(void* sshsession)
 
     if(!shell) {
         printf("Error: No shell requested (%s)\n", ssh_get_error(session));
-        return 1;
+        return (NULL);
     }
 
     printf("it works !\n");
 
     main_loop(chan);
+    return (NULL);
 }
