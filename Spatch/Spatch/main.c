@@ -10,6 +10,9 @@ int main(void)
 
     usr = GetUsrData("bertonf");
     DebugTraceUsrData(usr);
+    strcpy(usr->name, "bertons");
+    SaveUsrData(usr);
+    DebugTraceUsrData(usr);
     FreeUsrData(usr);
 
     return 0;

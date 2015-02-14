@@ -15,6 +15,7 @@ static void cleanList(sthreadList* list)
     sthreadList* tmp = NULL;
     do {
         ssh_disconnect(list->session);
+        ssh_free(list->session);
         tmp = list;
         list = tmp->next;
         free(tmp);
@@ -29,7 +30,6 @@ int spatch()
     ssh_bind sshbind = NULL;
     sthreadList* list = NULL;
 
-    int r;
     int port = SERVER_PORT;
 
     sshbind=ssh_bind_new();
@@ -60,7 +60,7 @@ int spatch()
         }
         else
         {
-            if (pthread_create(&(list->thread), NULL, NewSessionLoop, (void*)session) == 0)
+            if (pthread_create(&(list->thread), NULL, &NewSessionLoop, (void*)session) == 0)
             {
                 list = newNodeList(list, session);
             }
@@ -71,6 +71,8 @@ int spatch()
             }
         }
     }
+    if (session)
+        ssh_free(session);
     cleanList(list);
     ssh_bind_free(sshbind);
     ssh_finalize();
