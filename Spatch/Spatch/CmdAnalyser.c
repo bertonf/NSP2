@@ -1,10 +1,14 @@
 #include <string.h>
+#include <stdio.h>
+#include <libssh/libssh.h>
 #include "CmdAnalyser.h"
 
-static char g_cmd[256];
+void func1(char* cmd, ssh_channel chan)
+{
 
-void func1()
-{}
+    ssh_channel_write(chan, "not implemented", strlen("not implemented"));
+
+}
 
 CmdData CmdList[] = {
     {"lsserv", func1, USER},
@@ -20,46 +24,40 @@ CmdData CmdList[] = {
     {NULL, NULL, NONE}
 };
 
-
-
-void CmdAnalyserInit()
-{
-    memset(g_cmd, 0, 256);
-}
-
-int CmdExist()
+static int CmdExist(char* cmd)
 {
     int i = 0;
 
     while (CmdList[i].name != NULL)
     {
-        if (strcmp(g_cmd, CmdList[i].name) == 0)
+        if (strncmp(cmd, CmdList[i].name, strlen(CmdList[i].name)) == 0)
             return (i);
         ++i;
     }
     return (-1);
 }
 
-static void ParsingCmd()
+static void ParsingCmd(char* cmd, ssh_channel chanusr)
 {
     int ret = 0;
 
-    ret = CmdExist();
+    ret = CmdExist(cmd);
     if (ret == -1)
     {
+        printf("DEBUG | ParsingCmd() | DOESNT EXIST\n", g_cmd);
         // VERIFIER SI CONNECTER
         // CMD TO SERV
     }
     else
     {
+        printf("DEBUG | ParsingCmd() | EXIST\n", g_cmd);
         //VERIFIER ACCESS
-        CmdList[ret].func();
+        //CmdList[ret].func();
     }
 }
 
-void CmdAnalyser(char* cmd, int size)
+void CmdAnalyser(char* cmd, ssh_channel chanusr)
 {
-    strncat(g_cmd, cmd, size);
-    if (cmd[size] == '\n')
-        ParsingCmd();
+    printf("DEBUG | CmdAnalyser() | CMD = [%s]\n", cmd);
+    ParsingCmd(cmd, chanusr);
 }
