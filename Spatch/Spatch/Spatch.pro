@@ -22,7 +22,8 @@ HEADERS += \
     authentication.h \
     usrFile.h \
     CmdAnalyser.h \
-    svrFile.h
+    svrFile.h \
+    cmdlist.h
 
 
 LIBS += -lssh -lutil -lpthread

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "usrFile.h"
+#include "cmdlist.h"
 
 void cmd_createuser(char **cmd, ssh_channel channel)
 {
