@@ -5,7 +5,7 @@
 
 void func1(char* cmd, ssh_channel chan)
 {
-
+    (void)cmd;
     ssh_channel_write(chan, "not implemented", strlen("not implemented"));
 
 }
@@ -44,13 +44,13 @@ static void ParsingCmd(char* cmd, ssh_channel chanusr)
     ret = CmdExist(cmd);
     if (ret == -1)
     {
-        printf("DEBUG | ParsingCmd() | DOESNT EXIST\n", g_cmd);
+        printf("DEBUG | ParsingCmd() | DOESNT EXIST\n");
         // VERIFIER SI CONNECTER
         // CMD TO SERV
     }
     else
     {
-        printf("DEBUG | ParsingCmd() | EXIST\n", g_cmd);
+        printf("DEBUG | ParsingCmd() | EXIST\n");
         //VERIFIER ACCESS
         //CmdList[ret].func();
     }

@@ -42,7 +42,7 @@ ssh_session connect_ssh(const char *host, const char *user, int port, int verbos
     if(auth==SSH_AUTH_SUCCESS)
     {
         printf("Connection reussi\n");
-        show_remote_processes(session);
+        //show_remote_processes(session);
         return session;
     }
     else if(auth==SSH_AUTH_DENIED)
