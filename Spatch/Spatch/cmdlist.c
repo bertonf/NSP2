@@ -1,4 +1,6 @@
 #include <libssh/libssh.h>
+#include <stdlib.h>
+#include <string.h>
 #include "usrFile.h"
 
 void cmd_createuser(char **cmd, ssh_channel channel)
@@ -6,8 +8,8 @@ void cmd_createuser(char **cmd, ssh_channel channel)
         if (cmd[0] != NULL && cmd[1] != NULL && cmd[2] != NULL)
         {
             usrData *newuser = newUsrData();
-            newuser->name = malloc(strlen(cmd[1]);
-            newuser->pwd = malloc(strlen(cmd[2]);
+            newuser->name = malloc(strlen(cmd[1]));
+            newuser->pwd = malloc(strlen(cmd[2]));
 
 
             strcpy(newuser->name, cmd[1]);
@@ -19,12 +21,12 @@ void cmd_createuser(char **cmd, ssh_channel channel)
             else
             {
                 FreeUsrData(newuser);
-                ssh_channel_write(channel, ("usage \"cmd user pwd\"", strlen(("usage \"cmd user pwd\""));
+                ssh_channel_write(channel, "usage \"cmd user pwd\"", strlen("usage \"cmd user pwd\""));
             }
             saveusrdata(newuser);
         }
             else
         {
-            ssh_channel_write(channel, ("usage \"cmd user pwd\"", strlen(("usage \"cmd user pwd\""));
+            ssh_channel_write(channel, "usage \"cmd user pwd\"", strlen("usage \"cmd user pwd\""));
         }
 }
