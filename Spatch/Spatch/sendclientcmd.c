@@ -1,4 +1,5 @@
 #include <libssh/libssh.h>
+#include "sendclientcmd.h"
 
 ssh_channel open_client_channel(ssh_session session)
 {
