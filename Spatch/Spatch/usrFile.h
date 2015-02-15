@@ -50,6 +50,7 @@ typedef struct s_usrData
     eaccess spaAccess;
 }usrData;
 
+usrData* newUsrData();
 usrData* GetUsrData(char *usrName);
 int SaveUsrData(usrData *uData);
 void DebugTraceUsrData(usrData* usr);

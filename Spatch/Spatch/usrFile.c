@@ -4,7 +4,7 @@
 
 #include "usrFile.h"
 
-static usrData* newUsrData()
+usrData* newUsrData()
 {
     usrData *ud;
 

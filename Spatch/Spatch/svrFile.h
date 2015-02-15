@@ -16,6 +16,7 @@ typedef struct s_svrData
     char* port;
 }svrData;
 
+svrData* newSvrData();
 svrData* GetSvrData(char *svrName);
 int SaveSvrData(svrData *sData);
 void DebugTraceSvrData(svrData* svr);

@@ -4,7 +4,7 @@
 
 #include "svrFile.h"
 
-static svrData* newSvrData()
+svrData* newSvrData()
 {
     svrData *sd;
 
