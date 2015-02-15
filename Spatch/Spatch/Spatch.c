@@ -5,7 +5,11 @@ static sthreadList* newNodeList(sthreadList* list, ssh_session session)
 {
     sthreadList *n;
     n = (sthreadList*)malloc(sizeof(sthreadList));
-    n->session = session;
+    n->sesData.session = session;
+    n->sesData.channel = NULL;
+    n->sesData.clientsession = NULL;
+    n->sesData.clientchannel = NULL;
+    n->sesData.uData = NULL;
     n->next = list;
     return (n);
 }
@@ -14,8 +18,8 @@ static void cleanList(sthreadList* list)
 {
     sthreadList* tmp = NULL;
     do {
-        ssh_disconnect(list->session);
-        ssh_free(list->session);
+        ssh_disconnect(list->sesData.session);
+        ssh_free(list->sesData.session);
         tmp = list;
         list = tmp->next;
         free(tmp);
@@ -61,7 +65,7 @@ int spatch()
         else
         {
             list = newNodeList(list, session);
-            if (pthread_create(&(list->thread), NULL, (void*)NewSessionLoop, (void*)session) != 0)
+            if (pthread_create(&(list->thread), NULL, (void*)NewSessionLoop, (void*)&(list->sesData)) != 0)
             {
                 sthreadList* tmp;
 

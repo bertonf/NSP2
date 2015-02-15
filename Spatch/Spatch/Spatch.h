@@ -18,11 +18,21 @@
 #include <poll.h>
 #include <pty.h>
 #include <pthread.h>
+#include <usrFile.h>
+
+typedef struct s_sessionData
+{
+    ssh_session session;
+    ssh_channel channel;
+    ssh_session clientsession;
+    ssh_channel clientchannel;
+    usrData*    uData;
+}sessionData;
 
 typedef struct s_threadList
 {
     pthread_t thread;
-    ssh_session session;
+    sessionData sesData;
     struct s_threadList* next;
 } sthreadList;
 

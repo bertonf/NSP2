@@ -2,6 +2,7 @@
 #define CMDANALYSER_H
 
 #include <libssh/libssh.h>
+#include "Spatch.h"
 #include "usrFile.h"
 
 typedef struct s_CmdData
@@ -12,7 +13,7 @@ typedef struct s_CmdData
 }CmdData;
 
 void CmdAnalyserInit();
-void CmdAnalyser(char* cmd, ssh_channel chanuser);
+void CmdAnalyser(char* cmd, sessionData* sesData);
 
 
 #endif // CMDANALYSER_H

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <libssh/libssh.h>
 #include "CmdAnalyser.h"
+#include "Spatch.h"
 
 void func1(char* cmd, ssh_channel chan)
 {
@@ -37,27 +38,52 @@ static int CmdExist(char* cmd)
     return (-1);
 }
 
-static void ParsingCmd(char* cmd, ssh_channel chanusr)
+int CheckingAccessCmd(int id, usrData* uData)
+{
+    if (CmdList[id].access <= uData->spaAccess)
+        return (0);
+    return (1);
+}
+
+static void ParsingCmd(char* cmd, sessionData* sesData)
 {
     int ret = 0;
 
     ret = CmdExist(cmd);
     if (ret == -1)
     {
-        printf("DEBUG | ParsingCmd() | DOESNT EXIST\n");
-        // VERIFIER SI CONNECTER
-        // CMD TO SERV
+        if (sesData->session == NULL)
+        {
+            ssh_channel_write(sesData->channel,
+                              "Vous devez vous connecter a un serveur pour pouvoir utiliser cette commande.\n",
+                              strlen("Vous devez vous connecter a un serveur pour pouvoir utiliser cette commande.\n"));
+        }
+        else
+        {
+            if (sesData->clientchannel == NULL)
+                if ((sesData->clientchannel = open_client_channel(sesData->clientsession)) == NULL)
+                        ssh_channel_write(sesData->channel,
+                                          "Une erreur est survenue.\n",
+                                          strlen("Une erreur est survenue.\n"));
+            send_cmd_to_ssh(sesData->channel, sesData->clientchannel, cmd);
+        }
     }
     else
     {
         printf("DEBUG | ParsingCmd() | EXIST\n");
-        //VERIFIER ACCESS
-        //CmdList[ret].func();
+        if (CheckingAccessCmd(ret, sesData->uData) != 0)
+            ssh_channel_write(sesData->channel,
+                              "Vous n'avez pas les autorisations nécessaire pour utiliser cette commande.\n",
+                              strlen("Vous n'avez pas les autorisations nécessaire pour utiliser cette commande.\n"));
+        else
+        {
+            //CmdList[ret].func();
+        }
     }
 }
 
-void CmdAnalyser(char* cmd, ssh_channel chanusr)
+void CmdAnalyser(char* cmd, sessionData* sesData)
 {
     printf("DEBUG | CmdAnalyser() | CMD = [%s]\n", cmd);
-    ParsingCmd(cmd, chanusr);
+    ParsingCmd(cmd, sesData);
 }
