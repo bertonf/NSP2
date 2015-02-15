@@ -4,11 +4,10 @@
 #include "CmdAnalyser.h"
 #include "Spatch.h"
 
-void func1(char* cmd, ssh_channel chan)
+void func1(char** cmdtab, sessionData* sesData)
 {
-    (void)cmd;
-    ssh_channel_write(chan, "not implemented", strlen("not implemented"));
-
+    (void)cmdtab;
+    ssh_channel_write(sesData->channel, "not implemented", strlen("not implemented"));
 }
 
 CmdData CmdList[] = {
@@ -45,6 +44,33 @@ int CheckingAccessCmd(int id, usrData* uData)
     return (1);
 }
 
+char** wordToTab(char* cmd)
+{
+    char** result = NULL;
+    int nbword = 0;
+    char* word = NULL;
+    int i = 0;
+    do
+    {
+        if (*cmd == ' ' || *cmd == '\n' || *cmd == '\0')
+            ++nbword;
+        ++cmd;
+    } while (*cmd != '\0' || *cmd != '\n');
+
+    result = malloc(sizeof(char*) * (nbword + 1));
+    if (result != NULL)
+    {
+        word = strtok(cmd, " \n\0");
+        while (word)
+        {
+            result[i++] = word;
+            word = strtok(NULL, " \n\0");
+        }
+        result[i] = NULL;
+    }
+    return (result);
+}
+
 static void ParsingCmd(char* cmd, sessionData* sesData)
 {
     int ret = 0;
@@ -77,7 +103,7 @@ static void ParsingCmd(char* cmd, sessionData* sesData)
                               strlen("Vous n'avez pas les autorisations nécessaire pour utiliser cette commande.\n"));
         else
         {
-            //CmdList[ret].func();
+            CmdList[ret].func(wordToTab(cmd), sesData);
         }
     }
 }

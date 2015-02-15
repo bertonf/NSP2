@@ -8,7 +8,7 @@
 typedef struct s_CmdData
 {
     char* name;
-    void (*func)(char*, ssh_channel);
+    void (*func)(char**, sessionData*);
     eaccess access;
 }CmdData;
 

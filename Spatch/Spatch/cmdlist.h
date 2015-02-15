@@ -3,6 +3,6 @@
 
 #include <libssh/libssh.h>
 
-void cmd_createuser(char **cmd, ssh_channel channel);
+void cmd_createuser(char **cmd, sessionData* sesData);
 
 #endif // CMDLIST_H
