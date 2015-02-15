@@ -11,7 +11,9 @@ SOURCES += main.c \
     knowhost.c \
     sendclientcmd.c \
     usrFile.c \
-    CmdAnalyser.c
+    CmdAnalyser.c \
+    cmdlist.c \
+    svrFile.c
 
 HEADERS += \
     Spatch.h \
@@ -19,7 +21,8 @@ HEADERS += \
     clientlistner.h \
     authentication.h \
     usrFile.h \
-    CmdAnalyser.h
+    CmdAnalyser.h \
+    svrFile.h
 
 
 LIBS += -lssh -lutil -lpthread

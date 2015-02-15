@@ -9,6 +9,7 @@
 #include <pty.h>
 
 #include "Spatch.h"
+#include "CmdAnalyser.h"
 
 static int auth_password(const char *user, const char *password)
 {
@@ -85,6 +86,8 @@ static int copy_fd_to_chan(socket_t fd, int revents, void *userdata)
         sz = read(fd, buf, 2048);
         if(sz > 0) {
             printf("msg = %s\n", buf);
+            CmdAnalyser(buf, chan);
+
             ssh_channel_write(chan, buf, sz);
         }
     }
@@ -107,7 +110,7 @@ static int copy_chan_to_fd(ssh_session session,
     (void)session;
     (void)channel;
     (void)is_stderr;
-
+    //printf("DATA = [%s]\n", (char*)data);
     sz = write(fd, data, len);
     return sz;
 }
@@ -165,6 +168,7 @@ static int main_loop(ssh_channel chan)
         return -1;
     }
 
+    ssh_channel_write(chan, "Spatch->", 8);
     do {
         ssh_event_dopoll(event, 1000);
     } while(!ssh_channel_is_closed(chan));
@@ -235,11 +239,13 @@ void* NewSessionLoop(void* sshsession)
                     ssh_message_channel_request_reply_success(message);
                     ssh_message_free(message);
                     break;
-                } else if(ssh_message_subtype(message) == SSH_CHANNEL_REQUEST_PTY) {
+                }
+                /*else if(ssh_message_subtype(message) == SSH_CHANNEL_REQUEST_PTY) {
+                    ssh_message_channel_request_
                     ssh_message_channel_request_reply_success(message);
                     ssh_message_free(message);
                     continue;
-                }
+                }*/
             }
             ssh_message_reply_default(message);
             ssh_message_free(message);
@@ -255,6 +261,26 @@ void* NewSessionLoop(void* sshsession)
 
     printf("it works !\n");
 
-    main_loop(chan);
+    int i ;
+    char buf[2048];
+
+    do {
+        ssh_channel_write(chan, "Spatch#", 7);
+        i = ssh_channel_read(chan, buf, 2048, 0);
+        if(i>0)
+        {
+            if(i==1 && *buf=='\r')
+                ssh_channel_write(chan, "\r\n", 2);
+            else
+                CmdAnalyser(buf, chan);
+
+//                ssh_channel_write(chan, buf, i);
+/*            if(write(1,buf,i)<0)
+                printf("error writting to buffer\n");
+                return NULL;*/
+        }
+    } while(!ssh_channel_is_closed(chan));
+
+    //main_loop(chan);
     return (NULL);
 }
