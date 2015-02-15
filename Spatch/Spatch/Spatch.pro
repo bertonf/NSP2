@@ -23,7 +23,8 @@ HEADERS += \
     usrFile.h \
     CmdAnalyser.h \
     svrFile.h \
-    cmdlist.h
+    cmdlist.h \
+    sendclientcmd.h
 
 
 LIBS += -lssh -lutil -lpthread
