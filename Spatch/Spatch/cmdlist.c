@@ -4,6 +4,7 @@
 #include "Spatch.h"
 #include "usrFile.h"
 #include "cmdlist.h"
+#include "svrFile.h"
 
 void cmd_createuser(char **cmd, sessionData* sesData)
 {
@@ -27,6 +28,7 @@ void cmd_createuser(char **cmd, sessionData* sesData)
             ssh_channel_write(sesData->channel,
                               "usage \"createuser user pwd user|admin\"",
                               strlen("usage \"createuser user pwd user|admin\""));
+            return;
         }
         SaveUsrData(newuser);
         FreeUsrData(newuser);
@@ -37,5 +39,62 @@ void cmd_createuser(char **cmd, sessionData* sesData)
                           "usage \"createuser user pwd user|admin\"",
                           strlen("usage \"createuser user pwd user|admin\""));
     }
+
+}
+
+void cmd_deleteuser(char **cmd, sessionData* sesData)
+{
+    int status;
+
+    if (cmd[0] != NULL && cmd[1] != NULL)
+    {
+        //username.usr
+        status = remove(cmd[1]);
+        if (status == 0)
+        {
+            ssh_channel_write(sesData->channel,
+                              "user succesfully deleted\n",
+                              strlen("user succesfully deleted\n"));
+        }
+        else
+        {
+            ssh_channel_write(sesData->channel,
+                              "delete user failure\n",
+                              strlen("delete user failure\n"));
+        }
+    }
+}
+
+
+void cmd_createserver(char **cmd, sessionData* sesData)
+{
+    //char* name;
+    //char* ip;
+    //char* port;
+ // -> svrData;
+    if (cmd[0] != NULL && cmd[1] != NULL && cmd[2] != NULL && cmd[3] != NULL)
+    {
+        svrData *newsvr = newSvrData();
+        newsvr->name = malloc(strlen(cmd[1]) + 1);
+        newsvr->ip = malloc(strlen(cmd[2]) + 1);
+        newsvr->port = malloc(strlen(cmd[3]) + 1);
+        memset(newsvr->name, 0, strlen(cmd[1]) + 1);
+        memset(newsvr->ip, 0, strlen(cmd[2]) + 1);
+        memset(newsvr->port, 0, strlen(cmd[3]) + 1);
+        strcpy(newsvr->name, cmd[1]);
+        strcpy(newsvr->ip, cmd[2]);
+        strcpy(newsvr->port, cmd[3]);
+
+        SaveSvrData(newsvr);
+        FreeSvrData(newsvr);
+    }
+    else
+    {
+
+    }
+}
+
+void cmd_deleteserver(char **cmd, sessionData* sesData)
+{
 
 }
