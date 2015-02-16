@@ -230,3 +230,30 @@ void FreeUsrData(usrData* usr)
     free(usr->pwd);
     free(usr);
 }
+
+eaccess isUsrAccess(usrData* uData, char* servName)
+{
+    servAccess *tmp;
+
+    tmp = uData->sAccess;
+    while (tmp != NULL)
+    {
+        if (strcmp(tmp->name, servName) == 0)
+            return (tmp->acc);
+        tmp = tmp->next;
+    }
+    return (NONE);
+}
+
+void AddAccess(usrData* uData, char* servName, eaccess access)
+{
+    switch(access)
+    {
+    case ADMIN:
+        uData->sAccess = addServAccess(uData->sAccess, servName, "ADMIN");
+        break;
+    default:
+        uData->sAccess = addServAccess(uData->sAccess, servName, "USER");
+        break;
+    }
+}
