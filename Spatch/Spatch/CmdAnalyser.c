@@ -51,21 +51,25 @@ char** wordToTab(char* cmd)
     int nbword = 0;
     char* word = NULL;
     int i = 0;
-    do
-    {
-        if (*cmd == ' ' || *cmd == '\n' || *cmd == '\0')
-            ++nbword;
-        ++cmd;
-    } while (*cmd != '\0' || *cmd != '\n');
 
+    while (cmd[i] != '\0')
+    {
+        if (cmd[i] == ' ' || cmd[i] == '\r' || cmd[i] == '\n' || cmd[i] == '\0')
+            ++nbword;
+        if (cmd[i] == '\r')
+            cmd[i] = '\0';
+        ++i;
+    }
+    ++nbword;
+    i = 0;
     result = malloc(sizeof(char*) * (nbword + 1));
     if (result != NULL)
     {
-        word = strtok(cmd, " \n\0");
+        word = strtok(cmd, " \r\n\0");
         while (word)
         {
             result[i++] = word;
-            word = strtok(NULL, " \n\0");
+            word = strtok(NULL, " \r\n\0");
         }
         result[i] = NULL;
     }
