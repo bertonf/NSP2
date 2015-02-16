@@ -57,5 +57,6 @@ void DebugTraceUsrData(usrData* usr);
 void FreeUsrData(usrData* usr);
 eaccess isUsrAccess(usrData* uData, char* servName);
 void AddAccess(usrData* uData, char* servName, eaccess access);
+void DeleteAccess(usrData* uData, char* servName);
 
 #endif // USRFILE_H
