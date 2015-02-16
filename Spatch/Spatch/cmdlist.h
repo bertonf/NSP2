@@ -12,5 +12,7 @@ void cmd_lsaccess(char** cmdtab, sessionData* sesData);
 void cmd_connectto(char** cmdtab, sessionData* sesData);
 void cmd_createserver(char **cmd, sessionData* sesData);
 void cmd_deleteserver(char **cmd, sessionData* sesData);
+void cmd_createaccess(char **cmd, sessionData* sesData);
+void cmd_deleteaccess(char **cmd, sessionData *sesData);
 
 #endif // CMDLIST_H

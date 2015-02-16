@@ -26,8 +26,8 @@ void cmd_createuser(char **cmd, sessionData* sesData)
         {
             FreeUsrData(newuser);
             ssh_channel_write(sesData->channel,
-                              "usage \"createuser user pwd user|admin\"",
-                              strlen("usage \"createuser user pwd user|admin\""));
+                              "usage \"createuser user pwd user|admin\"\n",
+                              strlen("usage \"createuser user pwd user|admin\"\n"));
             return;
         }
         SaveUsrData(newuser);
@@ -36,8 +36,8 @@ void cmd_createuser(char **cmd, sessionData* sesData)
     else
     {
         ssh_channel_write(sesData->channel,
-                          "usage \"createuser user pwd user|admin\"",
-                          strlen("usage \"createuser user pwd user|admin\""));
+                          "usage \"createuser user pwd user|admin\"\n",
+                          strlen("usage \"createuser user pwd user|admin\"\n"));
     }
 
 }
@@ -117,3 +117,58 @@ void cmd_deleteserver(char **cmd, sessionData* sesData)
         }
     }
 }
+
+
+void cmd_createaccess(char **cmd, sessionData* sesData)
+{
+    //cmd user server right
+    // eaccess isuseraccess(*usrData servername)
+    //addaccess(*usrData servername eaccess)
+    if (cmd[0] != NULL && cmd[1] != NULL && cmd[2] != NULL && cmd[3] != NULL)
+    {
+        GetSvrData(cmd[2]);
+        usrData *usr = GetUsrData(cmd[1]);
+        if (GetSvrData(cmd[2]) == NULL)
+        {
+            ssh_channel_write(sesData->channel,
+                              "no server found with this name\n",
+                              strlen("no server found with this name\n"));
+            return;
+        }
+        if (isUsrAccess(usr, cmd[2]) == NONE)
+        {
+            if (strncmp("user", cmd[3], 4))
+            {
+                //TODO add user on serv ssh
+                AddAccess(usr, cmd[2], USER);
+            }
+            else if (strncmp("admin", cmd[3], 5))
+            {
+                //TODO add user on serv ssh
+                AddAccess(usr, cmd[2], ADMIN);
+            }
+            else
+                ssh_channel_write(sesData->channel,
+                                  "usage \"createaccess username servername user|admin\"\n",
+                                  strlen("usage \"createaccess username servername user|admin\"\n"));
+        }
+        else
+        {
+            ssh_channel_write(sesData->channel,
+                              "user already have right on this server\n",
+                              strlen("user already have right on this server\n"));
+        }
+    }
+    else
+    {
+        ssh_channel_write(sesData->channel,
+                          "usage \"createaccess username servername user|admin\"\n",
+                          strlen("usage \"createaccess username servername user|admin\"\n"));
+    }
+}
+
+void cmd_deleteaccess(char **cmd, sessionData *sesData)
+{
+
+}
+
