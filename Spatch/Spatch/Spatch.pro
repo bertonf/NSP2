@@ -13,7 +13,8 @@ SOURCES += main.c \
     usrFile.c \
     CmdAnalyser.c \
     cmdlist.c \
-    svrFile.c
+    svrFile.c \
+    cmdList2.c
 
 HEADERS += \
     Spatch.h \

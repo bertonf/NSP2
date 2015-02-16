@@ -3,6 +3,7 @@
 #include <libssh/libssh.h>
 #include "CmdAnalyser.h"
 #include "Spatch.h"
+#include "cmdlist.h"
 
 void func1(char** cmdtab, sessionData* sesData)
 {
@@ -11,11 +12,11 @@ void func1(char** cmdtab, sessionData* sesData)
 }
 
 CmdData CmdList[] = {
-    {"lsserv", func1, USER},
-    {"lsuser", func1, ADMIN},
-    {"lsaccess", func1, ADMIN},
-    {"connectto", func1, USER},
-    {"createuser", func1, ADMIN},
+    {"lsserv", cmd_lsserv, USER},
+    {"lsuser", cmd_lsuser, ADMIN},
+    {"lsaccess", cmd_lsaccess, ADMIN},
+    {"connectto", cmd_connectto, USER},
+    {"createuser", cmd_createuser, ADMIN},
     {"deleteuser", func1, ADMIN},
     {"createserv", func1, ADMIN},
     {"deleteserv", func1, ADMIN},
