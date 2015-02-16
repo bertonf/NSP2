@@ -17,9 +17,9 @@ CmdData CmdList[] = {
     {"lsaccess", cmd_lsaccess, ADMIN},
     {"connectto", cmd_connectto, USER},
     {"createuser", cmd_createuser, ADMIN},
-    {"deleteuser", func1, ADMIN},
-    {"createserv", func1, ADMIN},
-    {"deleteserv", func1, ADMIN},
+    {"deleteuser", cmd_deleteuser, ADMIN},
+    {"createserv", cmd_createserver, ADMIN},
+    {"deleteserv", cmd_deleteserver, ADMIN},
     {"createaccess", func1, ADMIN},
     {"deleteaccess", func1, ADMIN},
     {NULL, NULL, NONE}

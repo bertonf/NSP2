@@ -68,10 +68,6 @@ void cmd_deleteuser(char **cmd, sessionData* sesData)
 
 void cmd_createserver(char **cmd, sessionData* sesData)
 {
-    //char* name;
-    //char* ip;
-    //char* port;
- // -> svrData;
     if (cmd[0] != NULL && cmd[1] != NULL && cmd[2] != NULL && cmd[3] != NULL)
     {
         svrData *newsvr = newSvrData();
@@ -87,14 +83,37 @@ void cmd_createserver(char **cmd, sessionData* sesData)
 
         SaveSvrData(newsvr);
         FreeSvrData(newsvr);
+
+        ssh_channel_write(sesData->channel,
+                          "server succesfully added\n",
+                          strlen("server succesfully added\n"));
     }
     else
     {
-
+        ssh_channel_write(sesData->channel,
+                          "server add failure\n",
+                          strlen("server add failure\n"));
     }
 }
 
 void cmd_deleteserver(char **cmd, sessionData* sesData)
 {
+    int status;
 
+    if (cmd[0] != NULL && cmd[1] != NULL)
+    {
+        status = remove(cmd[1]);
+        if (status == 0)
+        {
+            ssh_channel_write(sesData->channel,
+                              "server succesfully deleted\n",
+                              strlen("server succesfully deleted\n"));
+        }
+        else
+        {
+            ssh_channel_write(sesData->channel,
+                              "delete server failure\n",
+                              strlen("delete server failure\n"));
+        }
+    }
 }
