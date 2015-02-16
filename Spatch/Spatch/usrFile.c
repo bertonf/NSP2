@@ -257,3 +257,24 @@ void AddAccess(usrData* uData, char* servName, eaccess access)
         break;
     }
 }
+
+void DeleteAccess(usrData* uData, char* servName)
+{
+    servAccess* prec = NULL;
+    servAccess* tmp = uData->sAccess;
+
+    while (tmp != NULL)
+    {
+        if (strcmp(tmp->name, servName))
+        {
+            if (prec != NULL)
+                prec->next = tmp->next;
+            else
+                uData->sAccess = tmp->next;
+            free(tmp);
+            break;
+        }
+        prec = tmp;
+        tmp = tmp->next;
+    }
+}
