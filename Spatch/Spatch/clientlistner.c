@@ -1,8 +1,9 @@
 #include <libssh/libssh.h>
 //#include "examples_common.h"
 #include <stdio.h>
+#include "authentication.h"
 
-ssh_session connect_ssh(const char *host, const char *user, int port, int verbosity)
+ssh_session connect_ssh(const char *host,  char* port, const char *user, char* password, int verbosity)
 {
     ssh_session session;
     int auth=0;
@@ -22,7 +23,7 @@ ssh_session connect_ssh(const char *host, const char *user, int port, int verbos
     {
         return NULL;
     }
-    if (ssh_options_set(session, SSH_OPTIONS_PORT, &port) < 0)
+    if (ssh_options_set(session, SSH_OPTIONS_PORT_STR, port) < 0)
     {
         return NULL;
     }
@@ -38,7 +39,7 @@ ssh_session connect_ssh(const char *host, const char *user, int port, int verbos
         ssh_disconnect(session);
         return NULL;
     }
-    auth=authenticate_console(session);
+    auth=authenticate_console(session, password);
     if(auth==SSH_AUTH_SUCCESS)
     {
         printf("Connection reussi\n");

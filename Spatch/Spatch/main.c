@@ -19,7 +19,7 @@ void mainTestUsrData(void)
 int main(void)
 {
     spatch();
-    //connect_ssh ("88.188.248.11", "ubuntu01", 5656,  0);
+    //connect_ssh ("88.188.248.11", "5656", "bertonf", "coucou", 0);
 
 
     return 0;

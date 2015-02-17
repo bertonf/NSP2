@@ -64,7 +64,7 @@ int authenticate_kbdint(ssh_session session, const char *password) {
 static void error(ssh_session session){
     fprintf(stderr,"Authentication failed: %s\n",ssh_get_error(session));
 }
-int authenticate_console(ssh_session session){
+int authenticate_console(ssh_session session, char* pwd){
     int rc;
     int method;
     char password[128] = {0};
@@ -87,6 +87,7 @@ int authenticate_console(ssh_session session){
                 break;
             }
         }
+/*
         // Try to authenticate with keyboard interactive";
         if (method & SSH_AUTH_METHOD_INTERACTIVE) {
             rc = authenticate_kbdint(session, NULL);
@@ -100,8 +101,10 @@ int authenticate_console(ssh_session session){
         if (ssh_getpass("Password: ", password, sizeof(password), 0, 0) < 0) {
             return SSH_AUTH_ERROR;
         }
+*/
         // Try to authenticate with password
-        if (method & SSH_AUTH_METHOD_PASSWORD) {
+          strncpy(password, pwd, 128);
+          if (method & SSH_AUTH_METHOD_PASSWORD) {
             rc = ssh_userauth_password(session, NULL, password);
             if (rc == SSH_AUTH_ERROR) {
                 error(session);

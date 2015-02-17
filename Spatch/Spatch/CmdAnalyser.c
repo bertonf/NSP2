@@ -4,11 +4,12 @@
 #include "CmdAnalyser.h"
 #include "Spatch.h"
 #include "cmdlist.h"
+#include "sendclientcmd.h"
 
 void func1(char** cmdtab, sessionData* sesData)
 {
     (void)cmdtab;
-    ssh_channel_write(sesData->channel, "not implemented", strlen("not implemented"));
+    ssh_channel_write(sesData->channel, "not implemented\r\n", strlen("not implemented\r\n"));
 }
 
 CmdData CmdList[] = {
@@ -20,8 +21,8 @@ CmdData CmdList[] = {
     {"deleteuser", cmd_deleteuser, ADMIN},
     {"createserv", cmd_createserver, ADMIN},
     {"deleteserv", cmd_deleteserver, ADMIN},
-    {"createaccess", func1, ADMIN},
-    {"deleteaccess", func1, ADMIN},
+    {"createaccess", cmd_createaccess, ADMIN},
+    {"deleteaccess", cmd_deleteaccess, ADMIN},
     {NULL, NULL, NONE}
 };
 
@@ -76,6 +77,13 @@ char** wordToTab(char* cmd)
     return (result);
 }
 
+void FormatCmd(char *cmd)
+{
+    printf("cmd[%d]=%d\n", strlen(cmd) - 1, cmd[strlen(cmd) - 1]);
+    if (cmd[strlen(cmd) - 1] == '\r' || cmd[strlen(cmd) - 1] == '\n')
+        cmd[strlen(cmd) - 1] = '\0';
+}
+
 static void ParsingCmd(char* cmd, sessionData* sesData)
 {
     int ret = 0;
@@ -83,20 +91,29 @@ static void ParsingCmd(char* cmd, sessionData* sesData)
     ret = CmdExist(cmd);
     if (ret == -1)
     {
-        if (sesData->session == NULL)
+        if (sesData->clientsession == NULL)
         {
             ssh_channel_write(sesData->channel,
-                              "Vous devez vous connecter a un serveur pour pouvoir utiliser cette commande.\n",
-                              strlen("Vous devez vous connecter a un serveur pour pouvoir utiliser cette commande.\n"));
+                              "Vous devez vous connectez a un serveur pour pouvoir utiliser cette commande.\r\n",
+                              strlen("Vous devez vous connectez a un serveur pour pouvoir utiliser cette commande.\r\n"));
         }
         else
         {
             if (sesData->clientchannel == NULL)
-                if ((sesData->clientchannel = open_client_channel(sesData->clientsession)) == NULL)
-                        ssh_channel_write(sesData->channel,
-                                          "Une erreur est survenue.\n",
-                                          strlen("Une erreur est survenue.\n"));
+            {
+                sesData->clientchannel = open_client_channel(sesData->clientsession);
+                if (sesData->clientchannel == NULL)
+                {
+                    ssh_channel_write(sesData->channel,
+                                          "Une erreur est survenue.\r\n",
+                                          strlen("Une erreur est survenue.\r\n"));
+                    return;
+                }
+            }
+            FormatCmd(cmd);
             send_cmd_to_ssh(sesData->channel, sesData->clientchannel, cmd);
+            close_client_channel(sesData->clientchannel);
+            sesData->clientchannel = NULL;
         }
     }
     else
@@ -104,8 +121,8 @@ static void ParsingCmd(char* cmd, sessionData* sesData)
         printf("DEBUG | ParsingCmd() | EXIST\n");
         if (CheckingAccessCmd(ret, sesData->uData) != 0)
             ssh_channel_write(sesData->channel,
-                              "Vous n'avez pas les autorisations nécessaire pour utiliser cette commande.\n",
-                              strlen("Vous n'avez pas les autorisations nécessaire pour utiliser cette commande.\n"));
+                              "Vous n'avez pas les autorisations nécessaire pour utiliser cette commande.\r\n",
+                              strlen("Vous n'avez pas les autorisations nécessaire pour utiliser cette commande.\r\n"));
         else
         {
             CmdList[ret].func(wordToTab(cmd), sesData);

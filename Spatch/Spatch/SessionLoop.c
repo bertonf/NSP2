@@ -166,6 +166,7 @@ void* NewSessionLoop(sessionData* sesData)
     char buf[2048];
 
     do {
+        memset(buf, 0, 2048);
         ssh_channel_write(sesData->channel, "\r\nSpatch#", 9);
         i = ssh_channel_read(sesData->channel, buf, 2048, 0);
         if(i>0)
