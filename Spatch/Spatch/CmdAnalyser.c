@@ -17,6 +17,7 @@ CmdData CmdList[] = {
     {"lsuser", cmd_lsuser, ADMIN},
     {"lsaccess", cmd_lsaccess, ADMIN},
     {"connectto", cmd_connectto, USER},
+    {"disconnect", cmd_disconnect, USER},
     {"createuser", cmd_createuser, ADMIN},
     {"deleteuser", cmd_deleteuser, ADMIN},
     {"createserv", cmd_createserver, ADMIN},
@@ -79,7 +80,7 @@ char** wordToTab(char* cmd)
 
 void FormatCmd(char *cmd)
 {
-    printf("cmd[%d]=%d\n", strlen(cmd) - 1, cmd[strlen(cmd) - 1]);
+    //printf("cmd[%d]=%d\n", strlen(cmd) - 1, cmd[strlen(cmd) - 1]);
     if (cmd[strlen(cmd) - 1] == '\r' || cmd[strlen(cmd) - 1] == '\n')
         cmd[strlen(cmd) - 1] = '\0';
 }

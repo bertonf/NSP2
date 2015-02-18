@@ -5,6 +5,7 @@
 #include "cmdlist.h"
 #include "svrFile.h"
 #include "clientlistner.h"
+#include "sendclientcmd.h"
 
 void cmd_lsserv(char** cmdtab, sessionData* sesData)
 {
@@ -206,5 +207,35 @@ void cmd_connectto(char** cmdtab, sessionData* sesData)
         ssh_channel_write(sesData->channel,
                           "Serveur inconnu.\r\n",
                           strlen("Serveur inconnu.\r\n"));
+    }
+}
+
+void cmd_disconnect(char** cmdtab, sessionData* sesData)
+{
+    if(cmdtab[0] == NULL)
+    {
+        ssh_channel_write(sesData->channel,
+                          "usage \"disconnect\"\r\n",
+                          strlen("usage \"disconnect\"\r\n"));
+        return;
+    }
+    if(sesData->clientsession == NULL)
+    {
+        ssh_channel_write(sesData->channel,
+                          "Vous n'etes connecté a aucun serveur\r\n",
+                          strlen("Vous n'etes connecté a aucun serveur\r\n"));
+    }
+    else
+    {
+        if (sesData->clientchannel != NULL)
+            close_client_channel(sesData->clientchannel);
+
+        ssh_disconnect(sesData->clientsession);
+        ssh_free(sesData->clientsession);
+        ssh_channel_write(sesData->channel,
+                          "Vous etes deconnecté du serveur\r\n",
+                          strlen("Vous etes deconnecté du serveur\r\n"));
+        sesData->clientchannel = NULL;
+        sesData->clientsession = NULL;
     }
 }
