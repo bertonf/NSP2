@@ -48,11 +48,16 @@ void cmd_createuser(char **cmd, sessionData* sesData)
 void cmd_deleteuser(char **cmd, sessionData* sesData)
 {
     int status;
+    char* filename;
 
     if (cmd[0] != NULL && cmd[1] != NULL)
     {
-        //username.usr
-        status = remove(cmd[1]);
+
+        filename = malloc(strlen(cmd[1]) + 5);
+        memset(filename, 0, strlen(cmd[1]) + 5);
+        strcpy(filename, cmd[1]);
+        strcat(filename, ".usr");
+        status = remove(filename);
         if (status == 0)
         {
             ssh_channel_write(sesData->channel,
@@ -65,6 +70,12 @@ void cmd_deleteuser(char **cmd, sessionData* sesData)
                               "delete user failure\r\n",
                               strlen("delete user failure\r\n"));
         }
+    }
+    else
+    {
+        ssh_channel_write(sesData->channel,
+                          "usage \"deleteuser user\"\r\n",
+                          strlen("usage \"deleteuser\"\r\n"));
     }
 }
 
@@ -94,18 +105,23 @@ void cmd_createserver(char **cmd, sessionData* sesData)
     else
     {
         ssh_channel_write(sesData->channel,
-                          "server add failure\r\n usage createserver servername ip port\r\n",
-                          strlen("server add failure\r\n usage createserver servername ip port\r\n"));
+                          "server add failure\r\nusage createserver servername ip port\r\n",
+                          strlen("server add failure\r\nusage createserver servername ip port\r\n"));
     }
 }
 
 void cmd_deleteserver(char **cmd, sessionData* sesData)
 {
     int status;
+    char* filename;
 
     if (cmd[0] != NULL && cmd[1] != NULL)
     {
-        status = remove(cmd[1]);
+        filename = malloc(strlen(cmd[1]) + 5);
+        memset(filename, 0, strlen(cmd[1]) + 5);
+        strcpy(filename, cmd[1]);
+        strcat(filename, ".svr");
+        status = remove(filename);
         if (status == 0)
         {
             ssh_channel_write(sesData->channel,
@@ -115,18 +131,21 @@ void cmd_deleteserver(char **cmd, sessionData* sesData)
         else
         {
             ssh_channel_write(sesData->channel,
-                              "delete server failure\r\n usage deleteserver servername ip port\r\n",
-                              strlen("delete server failure\r\n usage deleteserver servername ip port\r\n"));
+                              "delete server failure\r\n",
+                              strlen("delete server failure\r\n"));
         }
+    }
+    else
+    {
+        ssh_channel_write(sesData->channel,
+                          "usage \"deleteserv name\"\r\n",
+                          strlen("usage \"deleteserv name\"\r\n"));
     }
 }
 
 
 void cmd_createaccess(char **cmd, sessionData* sesData)
 {
-    //cmd user server right
-    // eaccess isuseraccess(*usrData servername)
-    //addaccess(*usrData servername eaccess)
     if (cmd[0] != NULL && cmd[1] != NULL && cmd[2] != NULL && cmd[3] != NULL)
     {
         svrData *svr = GetSvrData(cmd[2]);
@@ -161,9 +180,14 @@ void cmd_createaccess(char **cmd, sessionData* sesData)
                 strcat(cmdbuffer, usr->pwd);
                 strcat(cmdbuffer, "`\" ");
                 strcat(cmdbuffer, usr->name);
-                printf(cmdbuffer);
+                printf("%s\n", cmdbuffer);
                 send_cmd_to_ssh(sesData->channel, svrChannel, cmdbuffer);
                 AddAccess(usr, cmd[2], USER);
+                SaveUsrData(usr);
+                if (svrChannel != NULL)
+                    close_client_channel(svrChannel);
+                ssh_disconnect(session);
+                ssh_free(session);
             }
             else if (strncmp("admin", cmd[3], 5) == 0)
             {
@@ -177,10 +201,15 @@ void cmd_createaccess(char **cmd, sessionData* sesData)
                 strcat(cmdbuffer, usr->pwd);
                 strcat(cmdbuffer, "`\" ");
                 strcat(cmdbuffer, usr->name);
-                printf(cmdbuffer);
+                printf("%s\n", cmdbuffer);
                 send_cmd_to_ssh(sesData->channel, svrChannel, cmdbuffer);
 
                 AddAccess(usr, cmd[2], ADMIN);
+                SaveUsrData(usr);
+                if (svrChannel != NULL)
+                    close_client_channel(svrChannel);
+                ssh_disconnect(session);
+                ssh_free(session);
             }
             else
                 ssh_channel_write(sesData->channel,
@@ -193,6 +222,8 @@ void cmd_createaccess(char **cmd, sessionData* sesData)
                               "user already have right on this server\r\n",
                               strlen("user already have right on this server\r\n"));
         }
+        FreeUsrData(usr);
+        FreeSvrData(svr);
     }
     else
     {
@@ -215,6 +246,8 @@ void cmd_deleteaccess(char **cmd, sessionData *sesData)
             return;
         }
         DeleteAccess(usr, cmd[2]);
+        SaveUsrData(usr);
+        FreeUsrData(usr);
     }
     else
     {
@@ -224,4 +257,3 @@ void cmd_deleteaccess(char **cmd, sessionData *sesData)
     }
 
 }
-
